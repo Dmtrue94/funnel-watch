@@ -28,3 +28,6 @@ For funnel builders it recognises it reads the funnel's own data as well:
 - A test email (a plus-address works) lets the walker pass email gates; many funnels only show prices after it.
 - Some quizzes require a consent checkbox to continue. The walker ticks it only if you enable that on the tracker.
 - It never types passwords and never clicks pay, subscribe, start-trial or claim buttons. Captchas and bot walls are reported, not bypassed.
+
+---
+© 2026 Dzmitry · https://github.com/Dmtrue94/funnel-watch · Licensed under CC BY-NC 4.0

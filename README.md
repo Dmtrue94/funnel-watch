@@ -3,6 +3,7 @@
 **A mystery shopper for web2app funnels.** Every morning Claude walks your competitors' quiz funnels, stops at the paywall, and tells you exactly what changed: quiz screens and copy, funnel pages, plans, prices, trials, discounts, upsells and A/B variants.
 
 Free. No code, no server. Runs inside Claude.
+Created by **Dzmitry** · [CC BY-NC 4.0](LICENSE)
 
 ![Funnel Watch](docs/funnel-watch-1.png)
 
@@ -67,4 +68,9 @@ A generic walker handles option screens, multi-selects, info screens, height/wei
 
 ---
 
-Made by Dzmitry. Built with Claude.
+## Author & license
+**Funnel Watch is created by Dzmitry** ([github.com/Dmtrue94](https://github.com/Dmtrue94)). Built with Claude.
+
+Licensed under **[CC BY-NC 4.0](LICENSE)**: free to use, share and adapt, as long as you credit *"Funnel Watch by Dzmitry"* with a link to this repo and don't use it commercially without permission. Please don't republish it, or a modified version, as your own.
+
+If you write about it, share it, or build on it: a link back to this repo is all I ask.

@@ -5,6 +5,8 @@ description: Track competitors' web quiz funnels and paywalls every day and repo
 
 # Funnel Watch
 
+Author: Dzmitry · https://github.com/Dmtrue94/funnel-watch · License: CC BY-NC 4.0 (keep this credit when sharing or adapting).
+
 Funnel Watch gives the user a private tracker page (a Claude artifact with its own database) and a daily scheduled task. Each day the task opens every funnel on the watchlist in the Claude desktop app's built-in browser, answers the quiz, stops at the paywall without paying, snapshots it and diffs it against the day before. The user edits the watchlist on the tracker page itself.
 
 Requirements to state up front: the Claude desktop app must be open and the computer awake at the scheduled time (the browser runs there), and prices are the ones shown to the computer's own IP/country.

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Funnel Watch · © 2026 Dzmitry · https://github.com/Dmtrue94/funnel-watch
+# Licensed under CC BY-NC 4.0: credit the author and link the repo; no commercial use without permission.
 """Funnel Watch diff for scheduled sessions.
 
   python3 fw_diff.py grab TOOL_RESULT_FILE OUT.json                 # pull extractor JSON out of a saved browser tool result

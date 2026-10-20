@@ -1,3 +1,5 @@
+// Funnel Watch · © 2026 Dzmitry · https://github.com/Dmtrue94/funnel-watch
+// Licensed under CC BY-NC 4.0: credit the author and link the repo; no commercial use without permission.
 // Funnel Watch · generic quiz walker. Run repeatedly (each call ≤ ~28 s) until it returns done:true.
 // State lives in sessionStorage so it survives page navigations inside the funnel.
 // After the first call, continue with the short call:  JSON.stringify(window.__fwWalk ? await window.__fwWalk() : {reinject: true})

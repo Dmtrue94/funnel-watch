@@ -1,3 +1,5 @@
+// Funnel Watch · © 2026 Dzmitry · https://github.com/Dmtrue94/funnel-watch
+// Licensed under CC BY-NC 4.0: credit the author and link the repo; no commercial use without permission.
 // Funnel Watch · build a normalized snapshot after fw_walk.js finished (run on the final page).
 // Generic part comes from the walk; known funnel builders are enriched from their own data.
 const __r = await (async () => {
