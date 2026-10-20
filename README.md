@@ -48,7 +48,7 @@ Use the watchlist on your tracker page. No need to touch the scheduled task.
 
 ![Change feed](docs/funnel-watch-4.png)
 
-## Every funnel, any quiz
+## Every funnel, most quizzes
 Funnel Watch checks all the funnels on your watchlist in one run, so one competitor's sleep funnel, stress funnel and weight-loss funnel are each tracked separately.
 
 A generic walker handles option screens, multi-selects, info screens, height/weight/age inputs, name and email gates, cookie banners and marketing pop-ups. On funnel builders it recognises, it also reads the funnel's own config: timeout prices, exit discounts, downsells, upsells and every quiz branch, not only the one it walked.

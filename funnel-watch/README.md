@@ -7,7 +7,7 @@ Track every web quiz funnel and paywall of every competitor, every day, and get 
 - **A private tracker page** in your Claude account: a watchlist you edit yourself (name + funnel URL), a change feed per competitor, the current plans and prices, the funnel map and every quiz step.
 - **A daily scheduled task.** Claude opens each funnel in the Claude desktop app's browser, answers the quiz, stops at the paywall without paying, compares with yesterday and sends you a short report.
 
-## Works on any quiz funnel
+## Works on most quiz funnels
 
 A generic walker handles option screens, multi-selects, info screens, height/weight/age inputs, name and email gates, cookie banners and marketing opt-ins (it always declines them).
 
