@@ -1,0 +1,223 @@
+<title>Funnel Watch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: competitive-intel ledger. Watchlist on top, then one dossier per competitor: change feed first, reference tables folded below */
+:root{
+  --paper:#f2f4f7; --sheet:#ffffff; --ink:#18202b; --mute:#5d6878; --line:#dde2ea; --accent:#2f47c9;
+  --add:#17804a; --rem:#c1352b; --chg:#a46a06; --chip:#e8ecf3;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#11151c; --sheet:#181e27; --ink:#e6eaf0; --mute:#97a2b3; --line:#29313d; --accent:#8b9cff;
+  --add:#4fc488; --rem:#ff7a6e; --chg:#f2b84b; --chip:#222a35; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11151c; --sheet:#181e27; --ink:#e6eaf0; --mute:#97a2b3; --line:#29313d; --accent:#8b9cff;
+  --add:#4fc488; --rem:#ff7a6e; --chg:#f2b84b; --chip:#222a35; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 72px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:22px}
+.wrap>*,.dossier>*,.feed>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:14px}
+h1{font:700 34px/1 var(--f-display);letter-spacing:-.01em;margin:0;text-transform:uppercase}
+h1 small{display:block;font:500 12px/1.4 var(--f-data);letter-spacing:.08em;color:var(--mute);margin-top:6px;text-transform:uppercase}
+.run{font:13px/1.5 var(--f-data);color:var(--mute);text-align:right;max-width:46ch}
+.run b{color:var(--ink);font-weight:500}
+h2{font:700 17px var(--f-display);text-transform:uppercase;letter-spacing:.04em;margin:6px 0 0;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+h2 em{font:400 13px var(--f-data);color:var(--mute);font-style:normal;text-transform:none;letter-spacing:0}
+.panel{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:12px}
+.watch{display:grid;gap:0}
+.wrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.wrow:first-child{border-top:0;padding-top:0}
+.wrow b{font-weight:600}
+.wrow code{display:block;font:12px var(--f-data);color:var(--mute);overflow-wrap:anywhere}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+form.add{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:8px;align-items:end}
+label.f{display:grid;gap:4px;font:500 11px var(--f-data);letter-spacing:.07em;text-transform:uppercase;color:var(--mute);min-width:0}
+input[type=text],input[type=url],input[type=email]{font:14px var(--f-body);color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:600 13px var(--f-body);border:1px solid var(--line);background:var(--sheet);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer}
+button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+button.ghost{border-color:transparent;color:var(--mute)}
+button:disabled{opacity:.5;cursor:default}
+.opts{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:end;padding-top:12px;border-top:1px solid var(--line)}
+.opts label.f{flex:1 1 240px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink);max-width:52ch}
+.check input{margin-top:3px}
+.hint{font-size:13px;color:var(--mute)}
+.msg{font:13px var(--f-data);color:var(--add);min-height:1.2em}
+.msg.err{color:var(--rem)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{border-radius:999px;padding:7px 14px}
+nav button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.dossier{display:grid;gap:18px}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.fact{background:var(--sheet);padding:12px 14px;min-width:0}
+.fact span{display:block;font:500 11px var(--f-data);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.fact b{display:block;font:600 20px/1.3 var(--f-display);margin-top:4px;overflow-wrap:anywhere}
+.fact code{font:12px var(--f-data);color:var(--mute);overflow-wrap:anywhere}
+.feed{display:grid;gap:12px}
+.day{background:var(--sheet);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.day-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font:13px var(--f-data)}
+.day-h b{font:600 14px var(--f-body)}
+.pill{font:500 11px var(--f-data);letter-spacing:.05em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--mute)}
+.pill.changed{color:var(--chg)} .pill.baseline{color:var(--accent)} .pill.error{color:var(--rem)}
+.rows{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:8px 14px;border-top:1px solid var(--line);vertical-align:top}
+tr:first-child th{border-top:0}
+th{font:500 11px var(--f-data);letter-spacing:.07em;text-transform:uppercase;color:var(--mute)}
+tr.set th{background:var(--chip);color:var(--ink);font:600 13px var(--f-body);letter-spacing:0;text-transform:none}
+td.k{white-space:nowrap;font:500 12px var(--f-data)}
+.added{color:var(--add)} .removed{color:var(--rem)} .changed,.reordered{color:var(--chg)}
+.was{color:var(--rem);text-decoration:line-through;text-decoration-thickness:1px}
+.now{color:var(--add)}
+.sub{color:var(--mute);font-size:12px}
+.num{font-family:var(--f-data);font-variant-numeric:tabular-nums;white-space:nowrap}
+details{background:var(--sheet);border:1px solid var(--line);border-radius:10px}
+summary{cursor:pointer;padding:12px 14px;font:600 14px var(--f-body);list-style-position:inside}
+summary span{font:400 12px var(--f-data);color:var(--mute);margin-left:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 14px}
+.chips span{font:12px var(--f-data);background:var(--chip);padding:4px 9px;border-radius:6px}
+.chips span i{font-style:normal;color:var(--mute)}
+.empty{background:var(--sheet);border:1px dashed var(--line);border-radius:10px;padding:22px;color:var(--mute)}
+.empty b{color:var(--ink)}
+@media (max-width:640px){h1{font-size:28px}.run{text-align:left}form.add{grid-template-columns:1fr}.wrow{grid-template-columns:1fr}.acts{justify-content:flex-start}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Funnel Watch<small>Daily changes in competitors' web funnels</small></h1>
+    <div class="run" id="run">No check has run yet</div>
+  </header>
+
+  <section class="panel" aria-labelledby="wl-h">
+    <h2 id="wl-h">Watchlist <em id="wl-count"></em></h2>
+    <div class="watch" id="watch"><p class="hint">Add the entry URL of a competitor's quiz funnel, the link their ads send traffic to, or just the root of the quiz domain.</p></div>
+    <form class="add" id="add">
+      <label class="f" for="add-name">Name<input type="text" id="add-name" placeholder="Calm" maxlength="40" required></label>
+      <label class="f" for="add-url">Funnel URL<input type="url" id="add-url" placeholder="https://quiz.calm.com/" required></label>
+      <button class="primary" type="submit" id="add-btn">Add</button>
+    </form>
+    <div class="opts">
+      <label class="f" for="opt-email">Test email for email gates<input type="email" id="opt-email" placeholder="you+funnels@gmail.com"></label>
+      <label class="check" for="opt-consent"><input type="checkbox" id="opt-consent"> Tick consent checkboxes inside quizzes when a quiz will not continue without them</label>
+      <button type="button" id="opt-save">Save settings</button>
+    </div>
+    <div class="msg" id="msg" role="status"></div>
+  </section>
+
+  <nav id="tabs" aria-label="Competitors"></nav>
+  <main id="main"></main>
+  <p class="hint">Every day Claude opens each funnel in the Claude desktop app's browser, answers the quiz, stops at the paywall without paying, and records what changed since the previous day: quiz steps and copy, funnel pages, plans, prices, trials and A/B variants.</p>
+</div>
+
+<script>
+const SECTION={meta:"Config",funnel_map:"Funnel map",steps:"Quiz steps",products:"Plans & prices",paywall_copy:"Paywall copy",variant:"A/B variant"};
+const KIND={added:"+ added",removed:"− removed",changed:"≠ changed",reordered:"⇅ reordered"};
+const STATUS={baseline:"first snapshot",changed:"changes",unchanged:"no changes",error:"run failed"};
+let db=null,settings={competitors:[],email:"",auto_consent:false},state={snaps:{},changes:[],run:null,tab:null};
+const $=s=>document.querySelector(s);
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e};
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,30)||"site";
+const say=(t,err)=>{const m=$("#msg");m.textContent=t;m.className="msg"+(err?" err":"")};
+
+function renderWatch(){
+  const w=$("#watch"),list=settings.competitors||[];
+  $("#wl-count").textContent=list.length?`${list.length} funnel${list.length>1?"s":""}`:"";
+  if(!list.length){w.innerHTML='<p class="hint">Add the entry URL of a competitor\'s quiz funnel, the link their ads send traffic to, or just the root of the quiz domain.</p>';return}
+  w.innerHTML="";
+  list.forEach((c,i)=>{const r=el("div","wrow");const l=el("div");l.append(el("b",null,c.name));if(c.enabled===false)l.append(el("span","sub"," · paused"));l.append(el("code",null,c.url));
+    const a=el("div","acts");
+    const p=el("button","ghost",c.enabled===false?"Resume":"Pause");p.type="button";p.onclick=()=>{list[i].enabled=c.enabled===false;saveSettings(c.enabled===false?`${c.name} resumed`:`${c.name} paused`)};
+    const d=el("button","ghost","Remove");d.type="button";d.onclick=()=>{if(d.dataset.arm){list.splice(i,1);saveSettings(`${c.name} removed. Its history stays in the feed.`)}else{d.dataset.arm="1";d.textContent="Confirm remove";setTimeout(()=>{d.textContent="Remove";delete d.dataset.arm},3000)}};
+    a.append(p,d);r.append(l,a);w.append(r)});
+}
+async function saveSettings(okText){
+  if(!db){say("Sign in to Claude to edit the watchlist.",true);return}
+  try{await db.doc("config/settings").set(settings);say(okText||"Saved")}catch(e){say("Could not save: "+(e.message||e.code),true)}
+}
+$("#add").addEventListener("submit",e=>{e.preventDefault();
+  const name=$("#add-name").value.trim(),url=$("#add-url").value.trim();
+  let u;try{u=new URL(url)}catch(_){say("That URL is not valid. Paste the full link, starting with https://",true);return}
+  let id=slug(name),n=2;while(settings.competitors.some(c=>c.id===id))id=slug(name)+"-"+n++;
+  if(settings.competitors.some(c=>c.url===u.href)){say("That URL is already on the watchlist.",true);return}
+  settings.competitors.push({id,name,url:u.href,enabled:true,added:new Date().toISOString().slice(0,10)});
+  $("#add-name").value="";$("#add-url").value="";
+  saveSettings(`${name} added. It gets its first snapshot on the next daily check.`);
+});
+$("#opt-save").onclick=()=>{settings.email=$("#opt-email").value.trim();settings.auto_consent=$("#opt-consent").checked;saveSettings("Settings saved")};
+
+function render(){
+  renderWatch();
+  if(state.run){const d=new Date(state.run.at);$("#run").innerHTML="";
+    $("#run").append("Last check ",Object.assign(el("b"),{textContent:isNaN(d)?state.run.at:d.toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"})}),el("br"),state.run.summary||"")}
+  const names=Object.fromEntries((settings.competitors||[]).map(c=>[c.id,c.name]));
+  const comps=[...new Set([...(settings.competitors||[]).map(c=>c.id),...Object.keys(state.snaps),...state.changes.map(c=>c.competitor)])];
+  const tabs=$("#tabs");tabs.innerHTML="";const m=$("#main");m.innerHTML="";
+  if(!comps.length){m.append(Object.assign(el("div","empty"),{innerHTML:"<b>Nothing tracked yet.</b> Add a funnel above. The next daily check takes a first snapshot of it; changes appear here from the day after."}));return}
+  if(!state.tab||!comps.includes(state.tab))state.tab=comps[0];
+  comps.forEach(c=>{const b=el("button",null,names[c]||c);b.type="button";b.setAttribute("aria-pressed",String(c===state.tab));b.onclick=()=>{state.tab=c;render()};tabs.append(b)});
+  m.append(dossier(state.tab,names[state.tab]||state.tab));
+}
+
+function dossier(c,name){
+  const s=state.snaps[c];const box=el("section","dossier");
+  if(!s){box.append(Object.assign(el("div","empty"),{innerHTML:`<b>${name}</b> is waiting for its first daily check.`}));return box}
+  const facts=el("div","facts");
+  const fact=(l,v,code)=>{const f=el("div","fact");f.append(el("span",null,l),el("b",null,v));if(code)f.append(el("code",null,code));facts.append(f)};
+  fact("Snapshot",s.date||"—",s.captured_at?s.captured_at.slice(11,16)+" UTC":"");
+  fact("Quiz steps",String((s.steps||[]).length),s.platform&&s.platform!=="generic"?`read from ${s.platform} config`:`${(s.meta||{}).screens_walked||0} screens walked`);
+  fact("Plans",String((s.products||[]).length),[s.currency,s.country&&("IP "+s.country)].filter(Boolean).join(" · "));
+  fact("Stopped at",((s.meta||{}).stop_reason||"—").replace(/_/g," "),(s.meta||{}).final_path||"");
+  box.append(facts);
+  const ch=state.changes.filter(x=>x.competitor===c);
+  const h=el("h2",null,"Change feed");h.append(el("em",null,`${ch.reduce((a,x)=>a+(x.count||0),0)} changes over ${ch.length} checks`));box.append(h);
+  const feed=el("div","feed");ch.forEach(x=>feed.append(day(x)));box.append(feed);
+  if((s.products||[]).length)box.append(prices(s));
+  if((s.funnel_map||[]).length){const d=el("details");const sm=el("summary",null,"Funnel map");sm.append(el("span",null,`${s.funnel_map.length} pages`));d.append(sm);
+    const cw=el("div","chips");s.funnel_map.forEach(p=>{const sp=el("span");sp.append(p.page||p.key);if(p.tag)sp.append(" ",el("i",null,p.tag));cw.append(sp)});d.append(cw);box.append(d)}
+  if((s.steps||[]).length){const d=el("details");const sm=el("summary",null,"Quiz steps");sm.append(el("span",null,String(s.steps.length)));d.append(sm);
+    const w=el("div","rows");const t=el("table");t.innerHTML="<tr><th>Key</th><th>Type</th><th>Screen</th></tr>";
+    s.steps.forEach(st=>{const r=el("tr");r.append(el("td","k",st.key.length>28?st.key.slice(0,27)+"…":st.key),el("td","sub",st.type||""));const td=el("td");td.append(st.title||"");if(st.options&&st.options.length)td.append(el("div","sub",st.options.join(" · ")));r.append(td);t.append(r)});
+    w.append(t);d.append(w);box.append(d)}
+  return box;
+}
+function day(x){
+  const d=el("div","day");const h=el("div","day-h");h.append(el("b",null,x.date),el("span","pill "+x.status,STATUS[x.status]||x.status));
+  if(x.prev_date)h.append(el("span","sub",`vs ${x.prev_date}`));if(x.note)h.append(el("span","sub",x.note));d.append(h);
+  if((x.items||[]).length){const w=el("div","rows");const t=el("table");t.innerHTML="<tr><th>Section</th><th>What</th><th>Where</th><th>Before → after</th></tr>";
+    x.items.forEach(it=>{const r=el("tr");r.append(el("td",null,SECTION[it.section]||it.section),el("td",it.kind,KIND[it.kind]||it.kind));
+      const wh=el("td","k",(it.key.length>28?it.key.slice(0,27)+"…":it.key)+(it.field?"."+it.field:""));if(it.title)wh.append(el("div","sub",it.title));r.append(wh);
+      const v=el("td");if(it.kind==="changed"){v.append(el("span","was",it.before||"∅")," → ",el("span","now",it.after||"∅"))}else v.textContent=it.detail||"";r.append(v);t.append(r)});
+    w.append(t);d.append(w)}
+  return d;
+}
+function prices(s){
+  const d=el("details");d.open=true;const sm=el("summary",null,"Plans & prices");sm.append(el("span",null,s.currency||""));d.append(sm);
+  const skip=new Set(["key","currency"]);const cols=[];s.products.forEach(p=>Object.keys(p).forEach(k=>{if(!skip.has(k)&&!cols.includes(k))cols.push(k)}));
+  const show=cols.slice(0,7);const w=el("div","rows");const t=el("table");
+  t.innerHTML="<tr><th>Plan</th>"+show.filter(k=>k!=="name").map(k=>`<th>${k.replace(/_/g," ")}</th>`).join("")+"</tr>";
+  let last=null;
+  s.products.forEach(p=>{const set=p.key.includes(":")?p.key.split(":")[0]:null;
+    if(set&&set!==last){last=set;const main=s.products.find(x=>x.key===set+":mainPlan");const hr=el("tr","set");const th=el("th",null,"Plan set "+set+(main?" · "+main.name:""));th.colSpan=show.length+1;hr.append(th);t.append(hr)}
+    const r=el("tr");const n=el("td");n.append(p.name||p.key);if(set)n.append(el("div","sub",p.key.split(":")[1]));r.append(n);
+    show.filter(k=>k!=="name").forEach(k=>{const v=p[k];r.append(el("td",typeof v==="number"?"num":null,v==null?"—":String(v)))});t.append(r)});
+  w.append(t);d.append(w);return d;
+}
+
+(async()=>{
+  render();
+  db=await claude.use("db");
+  if(!db){say("Sign in to Claude to see and edit your watchlist.",true);$("#add-btn").disabled=true;$("#opt-save").disabled=true;return}
+  db.doc("config/settings").onSnapshot(d=>{const v=d.data();if(v){settings=Object.assign({competitors:[],email:"",auto_consent:false},v);
+    $("#opt-email").value=settings.email||"";$("#opt-consent").checked=!!settings.auto_consent}render()},()=>{});
+  db.collection("changes").orderBy("date","desc").limit(200).onSnapshot(q=>{state.changes=q.docs.map(d=>d.data());render()},()=>{});
+  db.collection("snapshots").orderBy("date","desc").limit(40).onSnapshot(q=>{const m={};q.docs.forEach(d=>{const v=d.data();if(v&&!m[v.competitor])m[v.competitor]=v});state.snaps=m;render()},()=>{});
+  db.doc("status/last_run").onSnapshot(d=>{state.run=d.data()||null;render()},()=>{});
+})();
+</script>
