@@ -15,7 +15,7 @@ Free. No code, no server. Runs inside Claude.
 - The **Claude desktop app** (Mac or Windows). The daily check runs in its built-in browser, so the app needs to be open and the computer awake at check time.
 
 ### 1. Download the skill
-Download **[funnel-watch.zip](../../releases/latest/download/funnel-watch.zip)**. Don't unzip it.
+Download **[funnel-watch.zip](https://github.com/Dmtrue94/funnel-watch/raw/main/funnel-watch.zip)**. Don't unzip it.
 
 ### 2. Upload it to Claude
 In Claude: **Customize → Skills → + → Create skill → Upload a skill**, then choose `funnel-watch.zip`. Make sure the skill is toggled on.
