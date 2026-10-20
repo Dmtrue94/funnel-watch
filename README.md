@@ -1,6 +1,6 @@
 # Funnel Watch
 
-**A mystery shopper for web2app funnels.** Every morning Claude walks your competitors' quiz funnels, stops at the paywall, and tells you exactly what changed: quiz screens and copy, funnel pages, plans, prices, trials, discounts, upsells and A/B variants.
+**A mystery shopper for web2app funnels.** Every morning Claude walks every funnel of every competitor you track, all the way to the paywall, and tells you exactly what changed: quiz screens and copy, funnel pages, plans, prices, trials, discounts, upsells and A/B variants.
 
 Free. No code, no server. Runs inside Claude.
 Created by **Dzmitry** · [CC BY-NC 4.0](LICENSE)
@@ -40,7 +40,7 @@ Use the watchlist on your tracker page. No need to touch the scheduled task.
 
 | | |
 |---|---|
-| **Watchlist** | Name + funnel URL. The link from their ads or just the quiz domain. |
+| **Watchlist** | Every funnel of every competitor. One brand often runs several quizzes for different angles (sleep, stress, weight loss): add each entry URL, from their ads or just the quiz domain. |
 | **Change feed** | Every change as "before → after", per competitor, per day. |
 | **Plans & prices** | The full plan table the paywall serves to your country. |
 | **Funnel map & quiz steps** | Every page and screen the bot went through. |
@@ -48,7 +48,9 @@ Use the watchlist on your tracker page. No need to touch the scheduled task.
 
 ![Change feed](docs/funnel-watch-4.png)
 
-## Works on any quiz funnel
+## Every funnel, any quiz
+Funnel Watch checks all the funnels on your watchlist in one run, so one competitor's sleep funnel, stress funnel and weight-loss funnel are each tracked separately.
+
 A generic walker handles option screens, multi-selects, info screens, height/weight/age inputs, name and email gates, cookie banners and marketing pop-ups. On funnel builders it recognises, it also reads the funnel's own config: timeout prices, exit discounts, downsells, upsells and every quiz branch, not only the one it walked.
 
 ## Good to know

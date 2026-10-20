@@ -1,6 +1,6 @@
 # Funnel Watch — a Claude skill
 
-Track competitors' web quiz funnels and paywalls every day, and get told what changed: quiz steps and copy, funnel pages, plans, prices, trials, A/B variants.
+Track every web quiz funnel and paywall of every competitor, every day, and get told what changed: quiz steps and copy, funnel pages, plans, prices, trials, A/B variants.
 
 ## What you get
 
