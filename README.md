@@ -43,10 +43,14 @@ Use the watchlist on your tracker page. No need to touch the scheduled task.
 | **Watchlist** | Every funnel of every competitor. One brand often runs several quizzes for different angles (sleep, stress, weight loss): add each entry URL, from their ads or just the quiz domain. |
 | **Change feed** | Every change as "before → after", per competitor, per day. |
 | **Plans & prices** | The full plan table the paywall serves to your country. |
-| **Funnel map & quiz steps** | Every page and screen the bot went through. |
+| **Funnel flow** | The whole funnel laid out: landing → quiz → email gate → … → checkout with the full price ladder (main offer, exit offer, promo tiers, downsell) → every upsell after the paywall. |
+| **Quiz steps** | Every screen and answer option. |
 | **Morning report** | A short summary in Claude: what changed and where. |
 
 ![Change feed](docs/funnel-watch-4.png)
+
+![Funnel flow](docs/funnel-flow-1.png)
+![After the paywall](docs/funnel-flow-2.png)
 
 ## Every funnel, most quizzes
 Funnel Watch checks all the funnels on your watchlist in one run, so one competitor's sleep funnel, stress funnel and weight-loss funnel are each tracked separately.

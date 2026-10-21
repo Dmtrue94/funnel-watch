@@ -59,12 +59,13 @@ const __r = await (async () => {
       const f = (st.flow && st.flow.data) || {};
       snap.platform = 'next-redux';
       snap.variant = `flow:${f.id}|sf:${f.salesFunnelId}`;
-      Object.assign(snap.meta, { flow_id: f.id, topic: f.topic, plan_label: f.planLabel, sales_funnel_id: f.salesFunnelId, landing_path: f.landingPagePath });
+      Object.assign(snap.meta, { flow_id: f.id, topic: f.topic, plan_label: f.planLabel, sales_funnel_id: f.salesFunnelId, landing_path: f.landingPagePath,
+        step_groups: Object.fromEntries(Object.entries(st.quiz.structureGroups || {}).map(([g, v]) => [g, (v || []).map(x => x.name)])) });
       const qs = []; for (const [g, items] of Object.entries(st.quiz.structure)) { const gn = g === '0' ? 'F' : g === '1' ? 'M' : g;
         items.forEach(x => qs.push({ key: `${gn}:${x.questionId || x.id}`, type: `${x.type}/${x.questionType || ''}`, title: strip(x.title).slice(0, 200), options: (x.answerOptions || []).map(o => o.title).filter(Boolean) })); }
       snap.steps = qs;
       const pi = (st.generatedSaleFunnel && st.generatedSaleFunnel.pagesInfo) || [];
-      if (pi.length) snap.funnel_map = pi.map(p => ({ key: `${p.pageOrder}:${p.pageUrl}`, page: p.pageUrl, tag: p.pageTag || p.pageType }));
+      if (pi.length) snap.funnel_map = pi.map(p => ({ key: `${p.pageOrder}:${p.pageUrl}`, page: p.pageUrl, tag: p.pageTag || p.pageType, conditional: !!(p.conditions && p.conditions.length) }));
       const E = (st.plans && st.plans.entities) || {};
       const cur = Object.keys((st.utils && st.utils.currencyRateToUsd) || {})[0] || 'USD';
       const prods = [];

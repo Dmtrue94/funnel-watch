@@ -87,6 +87,31 @@ summary span{font:400 12px var(--f-data);color:var(--mute);margin-left:8px}
 .chips span i{font-style:normal;color:var(--mute)}
 .empty{background:var(--sheet);border:1px dashed var(--line);border-radius:10px;padding:22px;color:var(--mute)}
 .empty b{color:var(--ink)}
+/* funnel flow */
+.flow{background:var(--sheet);border:1px solid var(--line);border-radius:10px;padding:16px 16px 18px;display:grid;gap:0}
+.flow h3{font:700 17px var(--f-display);text-transform:uppercase;letter-spacing:.04em;margin:0 0 12px;display:flex;flex-wrap:wrap;gap:10px;align-items:baseline}
+.flow h3 em{font:400 13px var(--f-data);color:var(--mute);font-style:normal;text-transform:none;letter-spacing:0}
+.stage{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;position:relative;padding-bottom:12px}
+.stage:not(:last-child)::before{content:"";position:absolute;left:16px;top:30px;bottom:0;width:2px;background:var(--line)}
+.dot{width:34px;height:34px;border-radius:50%;background:var(--chip);color:var(--ink);display:grid;place-items:center;font:600 13px var(--f-data);position:relative;z-index:1}
+.stage.money .dot{background:var(--accent);color:var(--sheet)}
+.sbody{min-width:0;padding-top:6px;display:grid;gap:6px}
+.sbody b{font-weight:600}
+.sbody .path{font:12px var(--f-data);color:var(--mute);overflow-wrap:anywhere}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font:500 11px var(--f-data);letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--mute)}
+.ladder{overflow-x:auto;border:1px solid var(--line);border-radius:8px;margin-top:4px}
+.ladder table{font-size:13px}
+.ladder th,.ladder td{padding:7px 10px;white-space:nowrap}
+.ladder td.cell b{font-family:var(--f-data);font-variant-numeric:tabular-nums}
+.ladder td.cell span{display:block;font:11px var(--f-data);color:var(--add)}
+.ladder td.cell s{font:11px var(--f-data);color:var(--mute)}
+.offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-top:4px}
+.offer{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:2px;min-width:0}
+.offer i{font:500 11px var(--f-data);letter-spacing:.04em;text-transform:uppercase;color:var(--mute);font-style:normal}
+.offer b{font-weight:600}
+.offer span{font:12px var(--f-data);color:var(--mute)}
+
 .credit{font:12px var(--f-data);color:var(--mute)}
 .credit a{color:var(--accent)}
 @media (max-width:640px){h1{font-size:28px}.run{text-align:left}form.add{grid-template-columns:1fr}.wrow{grid-template-columns:1fr}.acts{justify-content:flex-start}}
@@ -182,6 +207,7 @@ function dossier(c,name){
   const ch=state.changes.filter(x=>x.competitor===c);
   const h=el("h2",null,"Change feed");h.append(el("em",null,`${ch.reduce((a,x)=>a+(x.count||0),0)} changes over ${ch.length} checks`));box.append(h);
   const feed=el("div","feed");ch.forEach(x=>feed.append(day(x)));box.append(feed);
+  const fl=flow(s);if(fl)box.append(fl);
   if((s.products||[]).length)box.append(prices(s));
   if((s.funnel_map||[]).length){const d=el("details");const sm=el("summary",null,"Funnel map");sm.append(el("span",null,`${s.funnel_map.length} pages`));d.append(sm);
     const cw=el("div","chips");s.funnel_map.forEach(p=>{const sp=el("span");sp.append(p.page||p.key);if(p.tag)sp.append(" ",el("i",null,p.tag));cw.append(sp)});d.append(cw);box.append(d)}
@@ -200,6 +226,50 @@ function day(x){
       const v=el("td");if(it.kind==="changed"){v.append(el("span","was",it.before||"∅")," → ",el("span","now",it.after||"∅"))}else v.textContent=it.detail||"";r.append(v);t.append(r)});
     w.append(t);d.append(w)}
   return d;
+}
+
+const STAGE={first_page:"Landing",onboarding_page:"Quiz",email_page:"Email gate",name_input_page:"Name",progress_graph_page:"Progress graph",
+  country_change_page:"Country / currency check",scratch_card:"Scratch card (discount reveal)",checkout_page:"Checkout",signup_page:"Sign up",
+  premium_pack_upsell_page:"Premium pack upsell",upsell_page:"One-time upsell",download_page:"Download the app"};
+const TIER=[["mainPlan","Main offer","what most users see"],["dobivashkaPlan","Exit offer","second chance when they try to leave"],
+  ["maxDiscountPromoPlan","Max promo","promo-code tier"],["extraMaxDiscountPromoPlan","Extra-max promo","deepest promo tier"]];
+const SIDE=[["downsellPlan","Downsell"],["returningUserTrialPlan","Returning-user trial"],["skipTrialUpsellPlan","Skip-trial upsell"]];
+function money(v,c){if(v==null)return"—";const n=Number(v);return(c==="USD"?"$":"")+(Number.isInteger(n)?n:n.toFixed(2))+(c&&c!=="USD"?" "+c:"")}
+function flow(s){
+  const fm=s.funnel_map||[];if(fm.length<2)return null;
+  const prods=s.products||[];const roleOf=p=>p.key.includes(":")?p.key.split(":")[1]:null;
+  const sets=[...new Set(prods.filter(p=>p.key.includes(":")).map(p=>p.key.split(":")[0]))];
+  const get=(set,role)=>prods.find(p=>p.key===set+":"+role);const cur=s.currency||((prods[0]||{}).currency)||"";
+  const quizN=(s.steps||[]).length;const groups=(s.meta&&s.meta.step_groups)||null;
+  const box=el("section","flow");const h=el("h3",null,"Funnel flow");h.append(el("em",null,`${fm.length} pages · ${quizN} quiz screens${sets.length?` · ${sets.length} plan sets`:""}`));box.append(h);
+  let seenCheckout=false,n=0;
+  fm.forEach(f=>{
+    const tag=f.tag||"",label=STAGE[tag]||(f.page||f.key);n++;
+    const st=el("div","stage"+(/checkout|upsell|scratch/.test(tag)?" money":""));st.append(el("div","dot",String(n)));
+    const b=el("div","sbody");const t=el("b",null,label);b.append(t,el("div","path",f.page||""));
+    const bd=el("div","badges");if(f.conditional)bd.append(el("span","badge","conditional"));
+    if(/remarketing/.test(f.page||""))bd.append(el("span","badge","remarketing"));
+    if(/\/(female|male)$/.test(f.page||""))bd.append(el("span","badge",(f.page.endsWith("female")?"women":"men")));
+    if(tag==="premium_pack_upsell_page"&&/\/male$/.test(f.page||""))b.append(el("div","sub","Same offers, men's version"));
+    if(bd.childNodes.length)b.append(bd);
+    if(tag==="onboarding_page"&&quizN)b.append(el("div","sub",`${quizN} screens${groups?" · "+[...new Set(Object.values(groups).flat())].join(" → "):""}`));
+    if(tag==="checkout_page"&&!seenCheckout&&sets.length){seenCheckout=true;
+      const w=el("div","ladder");const tb=el("table");const hr=el("tr");hr.append(el("th",null,"Plan"));TIER.forEach(([,l,d])=>{const th=el("th",null,l);th.title=d;hr.append(th)});tb.append(hr);
+      sets.forEach(set=>{const m=get(set,"mainPlan");if(!m)return;const r=el("tr");const nm=el("td");nm.append(el("b",null,m.name));nm.append(el("div","sub",`renews ${money(m.renewal_price,cur)}`));r.append(nm);
+        TIER.forEach(([k])=>{const p=get(set,k);const c=el("td","cell");if(p){c.append(el("b",null,money(p.intro_price??p.renewal_price,cur)));if(p.list_price)c.append(" ",el("s",null,money(p.list_price,cur)));if(p.discount_pct!=null)c.append(el("span",null,`−${p.discount_pct}%`))}else c.textContent="—";r.append(c)});tb.append(r)});
+      w.append(tb);b.append(w);
+      const side=SIDE.map(([k,l])=>{const p=sets.map(x=>get(x,k)).find(Boolean);return p?[l,p]:null}).filter(Boolean);
+      if(side.length){const o=el("div","offers");side.forEach(([l,p])=>{const c=el("div","offer");c.append(el("i",null,l),el("b",null,p.name),el("span",null,`${money(p.intro_price,cur)} then ${money(p.renewal_price,cur)} · −${p.discount_pct}%`));o.append(c)});b.append(o)}
+    }
+    const up=(re)=>{const seen=new Map();prods.filter(p=>re.test(roleOf(p)||"")).forEach(p=>{const k=p.name+"|"+(p.intro_price??p.renewal_price);if(!seen.has(k))seen.set(k,p)});return[...seen.values()]};
+    let ups=[];if(tag==="premium_pack_upsell_page"&&!/\/male$/.test(f.page||""))ups=up(/^premiumPack/).filter(p=>!sets.length||p.key.startsWith(sets[0]+":"));
+    if(tag==="upsell_page")ups=up(/^(upsellPlans|upsellDobivashkaPlans|eCommUpsell)/);
+    if(ups.length){const o=el("div","offers");ups.slice(0,8).forEach(p=>{const r=roleOf(p);const c=el("div","offer");
+      c.append(el("i",null,/Dobivashka/.test(r)?"if bought via exit offer":/Discounted/.test(r)?"discounted":/eCommUpsell/.test(r)?"physical product":/premiumPack/.test(r)?"coaching":"add-on"),el("b",null,p.name),
+      el("span",null,`${money(p.intro_price??p.renewal_price,cur)}${p.list_price&&p.list_price!==(p.intro_price??p.renewal_price)?" (was "+money(p.list_price,cur)+")":""}`));o.append(c)});b.append(o)}
+    st.append(b);box.append(st);
+  });
+  return box;
 }
 function prices(s){
   const d=el("details");d.open=true;const sm=el("summary",null,"Plans & prices");sm.append(el("span",null,s.currency||""));d.append(sm);
